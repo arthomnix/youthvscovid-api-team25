@@ -1,0 +1,6 @@
+keras
+tensorflow
+pandas
+sklearn
+newsapi-python
+git+https://github.com/m-wrzr/populartimes.git
