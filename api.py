@@ -34,29 +34,29 @@ class NonCovidNewsResource(object):
                 page = data['page']
         try:
             resp.status = falcon.HTTP_200
-            news = {'error': error, 'attribution': 'Powered by NewsAPI.org', 'news': getNonCoronaNews(page)}
+            news = {'error': error, 'attribution': 'Powered by NewsAPI.org', 'source': 'https://github.com/arthomnix/youthvscovid-api-team25', 'news': getNonCoronaNews(page)}
         except newsapi.newsapi_exception.NewsAPIException:
             resp.status = falcon.HTTP_500
-            news = {'error': 'NewsAPIException', 'description': 'There was a News API error, most likely out of requests.'}
+            news = {'error': 'NewsAPIException', 'source': 'https://github.com/arthomnix/youthvscovid-api-team25', 'description': 'There was a News API error, most likely out of requests.'}
         except ValueError:
             resp.status = falcon.HTTP_400
-            news = {'error': 'ValueError', 'description': 'A ValueError was raised, almost certainly due to the fact that there are only 10 pages of news. Please only use page numbers of 10 or less'}
+            news = {'error': 'ValueError', 'source': 'https://github.com/arthomnix/youthvscovid-api-team25', 'description': 'A ValueError was raised, almost certainly due to the fact that there are only 10 pages of news. Please only use page numbers of 10 or less'}
         except:
             resp.status = falcon.HTTP_500
-            news = {'error': 'GeneralError', 'description': 'Something went wrong, please contact arthomnix for details.'}
+            news = {'error': 'GeneralError', 'source': 'https://github.com/arthomnix/youthvscovid-api-team25', 'description': 'Something went wrong, please contact arthomnix for details.'}
         resp.body = json.dumps(news)
 
 class CovidNewsResource(object):
     def on_get(self, req, resp):
         try:
             resp.status = falcon.HTTP_200
-            news = {'error': 'None', 'attribution': 'Powered by NewsAPI.org', 'news': getCoronaNews()}
+            news = {'error': 'None', 'source': 'https://github.com/arthomnix/youthvscovid-api-team25', 'attribution': 'Powered by NewsAPI.org', 'news': getCoronaNews()}
         except newsapi.newsapi_exception.NewsAPIException:
             resp.status = falcon.HTTP_500
-            news = {'error': 'NewsAPIException', 'description': 'There was a News API error, most likely out of requests.'}
+            news = {'error': 'NewsAPIException', 'source': 'https://github.com/arthomnix/youthvscovid-api-team25', 'description': 'There was a News API error, most likely out of requests.'}
         except:
             resp.status = falcon.HTTP_500
-            news = {'error': 'GeneralError', 'description': 'Something went wrong, please contact arthomnix for details.'}
+            news = {'error': 'GeneralError', 'source': 'https://github.com/arthomnix/youthvscovid-api-team25', 'description': 'Something went wrong, please contact arthomnix for details.'}
         resp.body = json.dumps(news)
 
 class PopularTimesResource(object):
@@ -69,14 +69,14 @@ class PopularTimesResource(object):
                 br = data['br']
                 q = data['q']
                 day = int(datetime.now().strftime('%u'))-1
-                resp.body = {'error': 'None', 'popularTimes': getPopularTimes(tl, br, q, day)}
+                resp.body = {'error': 'None', 'source': 'https://github.com/arthomnix/youthvscovid-api-team25', 'popularTimes': getPopularTimes(tl, br, q, day)}
             else:
                 resp.status = falcon.HTTP_400
-                resp.body = {'error': 'RequestError', 'description': 'Invalid request format.'}
+                resp.body = {'error': 'RequestError', 'source': 'https://github.com/arthomnix/youthvscovid-api-team25', 'description': 'Invalid request format.'}
             resp.body = json.dumps(resp.body)
         except:
                 resp.status = falcon.HTTP_500
-                resp.body = json.dumps({'error': 'GeneralError', 'description': 'Something went wrong, please contact arthomnix for details.'})
+                resp.body = json.dumps({'error': 'GeneralError', 'source': 'https://github.com/arthomnix/youthvscovid-api-team25', 'description': 'Something went wrong, please contact arthomnix for details.'})
 
 class LicenseInfoResource(object):
     def on_get(self, req, resp):
