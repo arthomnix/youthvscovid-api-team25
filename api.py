@@ -1,3 +1,18 @@
+#Team 25 YouthVSCovid API - api.py
+#Copyright (C) 2020 arthomnix
+#
+#This program is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published
+#by the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import falcon, json
 from getNews import getNonCoronaNews, getCoronaNews
 import newsapi
@@ -63,11 +78,17 @@ class PopularTimesResource(object):
                 resp.status = falcon.HTTP_500
                 resp.body = json.dumps({'error': 'GeneralError', 'description': 'Something went wrong, please contact arthomnix for details.'})
 
+class LicenseInfoResource(object):
+    def on_get(self, req, resp):
+        resp.body=json.dumps({"License": "GNU AGPLv3", "information": "You can access the source code and detailed license info for this project at https://github.com/arthomnix/youthvscovid-api-team25"})
+                
 api = falcon.API()
 noncovidnews_endpoint = NonCovidNewsResource()
 covidnews_endpoint = CovidNewsResource()
 populartimes_endpoint = PopularTimesResource()
+license_endpoint = LicenseInfoResource()
 
 api.add_route('/news/nonCovid', noncovidnews_endpoint)
 api.add_route('/news/Covid', covidnews_endpoint)
 api.add_route('/popularTimes', populartimes_endpoint)
+api.add_route('/license', license_endpoint)
