@@ -5,4 +5,5 @@ sklearn
 newsapi-python
 gunicorn
 falcon
+boto3
 git+https://github.com/m-wrzr/populartimes.git

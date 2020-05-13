@@ -17,6 +17,7 @@ import falcon, json
 from getNews import getNonCoronaNews, getCoronaNews
 import newsapi
 from getPopularTimes import getPopularTimes
+from awsSentiment import detectSentiment
 from datetime import datetime
 
 class NonCovidNewsResource(object):
@@ -81,14 +82,60 @@ class PopularTimesResource(object):
 class LicenseInfoResource(object):
     def on_get(self, req, resp):
         resp.body=json.dumps({"License": "GNU AGPLv3", "information": "You can access the source code and detailed license info for this project at https://github.com/arthomnix/youthvscovid-api-team25"})
-                
+
+class SentimentAnalysisResource(object):
+    def on_post(self, req, resp):
+        error = "None"
+        try:
+            data = json.load(req.bounded_stream)
+            if 'text' in data and 'lang' in data:
+                text = data['text']
+                lang = data['lang']
+                langUsed = True
+            elif 'text' in data:
+                text = data['text']
+                langUsed = False
+            else:
+                error = "RequestError"
+                errorDescription = "Invalid request format."
+                errorCode = falcon.HTTP_400
+        except:
+            error = "RequestLoadError"
+            errorDescription = "The server failed to load your request data."
+            errorCode = falcon.HTTP_400
+        if error != "None":
+            resp.status = errorCode
+            resp.body = json.dumps({"error": error, "description": errorDescription})
+        try:
+            if langUsed:
+                sentiment = detectSentiment(text, lang)
+            else:
+                sentiment = detectSentiment(text)
+            overallSentiment = sentiment['Sentiment']
+            pos = sentiment['SentimentScore']['Positive']
+            neu = sentiment['SentimentScore']['Neutral']
+            neg = sentiment['SentimentScore']['Negative']
+            mix = sentiment['SentimentScore']['Mixed']
+        except:
+            error = "SentimentAnalysisError"
+            errorDescription = "There was an error performing sentiment analysis, was your language code valid?"
+            errorCode = falcon.HTTP_500
+        if error != "None":
+            resp.status = errorCode
+            resp.body = json.dumps({"error": error, "description": errorDescription})
+        else:
+            response = {'error': error, 'overall-sentiment': overallSentiment, 'pos': pos, 'neg': neg, 'neu': neu, 'mix': mix}
+            resp.body = json.dumps(response)
+
 api = falcon.API()
 noncovidnews_endpoint = NonCovidNewsResource()
 covidnews_endpoint = CovidNewsResource()
 populartimes_endpoint = PopularTimesResource()
 license_endpoint = LicenseInfoResource()
+sentiment_endpoint = SentimentAnalysisResource()
 
 api.add_route('/news/nonCovid', noncovidnews_endpoint)
 api.add_route('/news/Covid', covidnews_endpoint)
 api.add_route('/popularTimes', populartimes_endpoint)
 api.add_route('/license', license_endpoint)
+api.add_route('/sentiment', sentiment_endpoint)
